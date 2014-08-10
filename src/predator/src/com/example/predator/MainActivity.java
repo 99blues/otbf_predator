@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
 	    @Override
 	    public void handleMessage(Message msg) {
 	    	mapView.invalidate();
-	    	sleep(1000);
+	    	sleep(500);
 	    }
 	    //スリープメソッド
 	    public void sleep(long delayMills) {
