@@ -11,54 +11,27 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.View;
+
 import com.example.predator.R;
-
-
+import com.example.predator.player.Hunter;
+import com.example.predator.player.Target;
+	
 public class MapView extends View {
 
-	int mCount = 0;
+	private Target target = null;
+	private Hunter hunter = null;
 	
-	boolean xDirection = true;
-	boolean yDirection = true;
-	int xPos = 100;
-	int yPos = 100;
-
+	private int mCount = 0;
 	
     public MapView(Context context) {
         super(context);
     }
     
-    
-    private void moveTarget(){
-    	int xOffset = (int)(Math.sin(Math.toRadians((double)(mCount%360)) * 100.0)) ;
-    	
-    	if(xDirection ){
-    		xPos += 7;
-    		if(500 < xPos){
-    			xDirection = false;
-    		}
-    	}
-    	else{
-    		xPos -= 7;
-    		if(xPos < 100){
-    			xDirection = true;
-    		}
-    	}
-
-    	if(yDirection ){
-    		yPos += 5;
-    		if(400 < yPos){
-    			yDirection = false;
-    		}
-    	}
-    	else{
-    		yPos -= 4;
-    		if(yPos < 50){
-    			yDirection = true;
-    		}
-    	}
-    	
+    public void registPlayer(Hunter h, Target t){
+    	hunter = h;
+    	target = t;
     }
+    
     @SuppressLint("DrawAllocation")
 	@Override
     public void onDraw(Canvas canvas) {
@@ -66,9 +39,8 @@ public class MapView extends View {
     	
     	drawCanvas(canvas);
     	
-    	moveTarget();
-    	drawTarget(canvas, xPos, yPos, 160, Color.argb(255, 255, 0, 255), Color.argb(100, 255, 0, 255));
-
+   		drawTarget(canvas);
+    	
     	drawGrid(canvas);
 
     	
@@ -93,7 +65,7 @@ public class MapView extends View {
     	drawBeacon(canvas, 1010, 490, r, c2);
     	drawBeacon(canvas, 1190, 520, r, c1);
     	
-    	drawMyPosition(canvas, 880, 240, 50, Color.GREEN);
+    	drawHunter(canvas);//, 880, 240, 50, Color.GREEN);
     	
 
     }
@@ -109,7 +81,8 @@ public class MapView extends View {
         paint.setColor(Color.rgb(255,255,255));
         canvas.drawCircle(930, 260, 200, paint);
     }
-        /**
+    
+    /**
      * グリッド線を描く
      * 
      * @param canvas
@@ -120,7 +93,7 @@ public class MapView extends View {
         paint.setAntiAlias(false);
         paint.setColor(Color.rgb(255, 0, 0));
         paint.setTextSize(32);
-        canvas.drawText(String.format("%dsec", mCount++ ), 30, 30, paint);
+        canvas.drawText(String.format("frame:%d", mCount++ ), 30, 30, paint);
        
         paint.setColor(Color.argb(75, 128, 128, 255));
         
@@ -135,7 +108,22 @@ public class MapView extends View {
         }
     }
 
-    private void drawTarget(Canvas canvas, int x, int y, int r, int ic, int oc){
+    /**
+     * ターゲットを描く
+     * 
+     * @param canvas
+     */
+    private void drawTarget(Canvas canvas ){
+    	if(target == null){
+    		return;
+    	}
+    	
+    	final int r = 160;
+    	final int ic = Color.argb(255, 255, 0, 255);
+    	final int oc = Color.argb(100, 255, 0, 255);
+    	final int x = target.getX();
+    	final int y = target.getY();
+    	
         Paint paint = new Paint();
 
         paint.setAntiAlias(false);
@@ -149,7 +137,14 @@ public class MapView extends View {
         canvas.drawCircle(x, y, r/2, paint);
     }
 
-    private void drawMyPosition(Canvas canvas, int x, int y, int r, int c){
+    /**
+     *  ユーザーの位置を描画
+     */
+    private void drawHunter(Canvas canvas){//, int x, int y, int r, int c){
+    	//final int r = 50;
+    	//final int c = Color.GREEN;
+    	final int x = hunter.getX();
+    	final int y = hunter.getY();
     	
 		Paint paint = new Paint();
     	

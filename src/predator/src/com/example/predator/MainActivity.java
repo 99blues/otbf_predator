@@ -17,18 +17,29 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 import com.example.predator.map.MapView;
+import com.example.predator.player.Target;
+import com.example.predator.player.Hunter;
 
 public class MainActivity extends Activity {
 
-	UpdateHandler mUpdate = new UpdateHandler(); 
-	com.example.predator.map.MapView mapView = null;
+	private UpdateHandler mUpdate = new UpdateHandler(); 
+	
+	private com.example.predator.map.MapView mapView = null;
+	private com.example.predator.player.Target target = null;
+	private com.example.predator.player.Hunter hunter = null;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		target = new Target();
+		hunter = new Hunter();
+		
 		mapView = new com.example.predator.map.MapView(this);
+		mapView.registPlayer(hunter, target);
+		
         setContentView(mapView);
         mUpdate.sleep(0);
         /*
