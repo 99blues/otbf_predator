@@ -36,14 +36,11 @@ public class MapView extends View {
 	@Override
     public void onDraw(Canvas canvas) {
     	
-    	
     	drawCanvas(canvas);
-    	
+    	drawHunterRange(canvas);
    		drawTarget(canvas);
     	
     	drawGrid(canvas);
-
-    	
     	
     	int r = 25;
     	
@@ -78,8 +75,8 @@ public class MapView extends View {
         paint.setColor(Color.rgb(0xcf, 0xcf, 0xcf));
         canvas.drawRect(0,0,1280,1280,paint);
 
-        paint.setColor(Color.rgb(255,255,255));
-        canvas.drawCircle(930, 260, 200, paint);
+        //paint.setColor(Color.rgb(255,255,255));
+        //canvas.drawCircle(930, 260, 200, paint);
     }
     
     /**
@@ -107,7 +104,30 @@ public class MapView extends View {
             canvas.drawLine(x, 0, x, 1279, paint);
         }
     }
+    
+    /**
+     *  ハンターの射程範囲を描画
+     *  
+     * @param canvas
+     */
+    private void drawHunterRange(Canvas canvas ){
+    	if(hunter == null){
+    		return;
+    	}
 
+    	final int x = hunter.getX();
+    	final int y = hunter.getY();
+    	final int r = 160;
+    	
+        Paint paint = new Paint();
+
+        paint.setStyle(Paint.Style.FILL);
+
+        paint.setColor(Color.rgb(255,255,255));
+        canvas.drawCircle(x,y,r,paint);//930, 260, 200, paint);
+    }
+    
+    
     /**
      * ターゲットを描く
      * 
@@ -119,8 +139,8 @@ public class MapView extends View {
     	}
     	
     	final int r = 160;
-    	final int ic = Color.argb(255, 255, 0, 255);
-    	final int oc = Color.argb(100, 255, 0, 255);
+    	final int ic = Color.argb(128, 255, 0, 255);
+    	final int oc = Color.argb(32, 255, 0, 255);
     	final int x = target.getX();
     	final int y = target.getY();
     	
@@ -145,13 +165,14 @@ public class MapView extends View {
     	//final int c = Color.GREEN;
     	final int x = hunter.getX();
     	final int y = hunter.getY();
+    	final int size = 32;
     	
 		Paint paint = new Paint();
     	
 		Resources res = this.getContext().getResources();
 		Bitmap myImage = BitmapFactory.decodeResource(res, R.drawable.bsd);
 		
-		canvas.drawBitmap(myImage, x, y,paint);
+		canvas.drawBitmap(myImage, x-size, y-size, paint);
 	}
 
     

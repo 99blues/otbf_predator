@@ -22,7 +22,11 @@ import com.example.predator.player.Hunter;
 
 public class MainActivity extends Activity {
 
-	private UpdateHandler mUpdate = new UpdateHandler(); 
+	private final static int UPDATE_DELAY_MSEC = 3000;
+	private final static int UPDATE_INTERVAL_MSEC = 1000;
+	//private UpdateHandler mUpdate = new UpdateHandler(); 
+	private Timer updateTimer = null;
+	private Handler updateHandler = null;
 	
 	private com.example.predator.map.MapView mapView = null;
 	private com.example.predator.player.Target target = null;
@@ -41,7 +45,23 @@ public class MainActivity extends Activity {
 		mapView.registPlayer(hunter, target);
 		
         setContentView(mapView);
-        mUpdate.sleep(0);
+        
+		updateHandler = new Handler();
+		
+		updateTimer = new Timer(false);
+		updateTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				updateHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						mapView.invalidate();
+					}
+				});
+			}
+		}, UPDATE_DELAY_MSEC, UPDATE_INTERVAL_MSEC);
+        
+        //mUpdate.sleep(0);
         /*
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -49,7 +69,7 @@ public class MainActivity extends Activity {
 		}
 		*/
 	}
-
+/*
 	public class UpdateHandler extends Handler {
 	    @Override
 	    public void handleMessage(Message msg) {
@@ -62,7 +82,7 @@ public class MainActivity extends Activity {
 	        sendMessageDelayed(obtainMessage(0),1000);
 	    }
 	}
-
+*/
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

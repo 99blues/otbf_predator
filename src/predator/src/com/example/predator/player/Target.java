@@ -8,8 +8,8 @@ public class Target {
 	private final static int UPDATE_DELAY_MSEC = 3000;
 	private final static int UPDATE_INTERVAL_MSEC = 1000;
 	
-	Timer updateTimer = null;
-	Handler updateHandler = null;
+	private Timer updateTimer = null;
+	private Handler updateHandler = null;
 	
 	private boolean xDirection = true;
 	private boolean yDirection = true;
