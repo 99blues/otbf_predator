@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import com.example.predator.ibeacon.BeaconManager;
 import com.example.predator.map.MapView;
 import com.example.predator.player.Target;
 import com.example.predator.player.Hunter;
@@ -27,6 +28,8 @@ public class MainActivity extends Activity {
 	//private UpdateHandler mUpdate = new UpdateHandler(); 
 	private Timer updateTimer = null;
 	private Handler updateHandler = null;
+	
+	private com.example.predator.ibeacon.BeaconManager beaconManger = null;
 	
 	private com.example.predator.map.MapView mapView = null;
 	private com.example.predator.player.Target target = null;
@@ -40,6 +43,9 @@ public class MainActivity extends Activity {
 		
 		target = new Target();
 		hunter = new Hunter();
+		
+		beaconManger = new BeaconManager();
+//		beaconManger.load("http://hoge.99blues.com/ibeacons.json");
 		
 		mapView = new com.example.predator.map.MapView(this);
 		mapView.registPlayer(hunter, target);
@@ -55,6 +61,8 @@ public class MainActivity extends Activity {
 				updateHandler.post(new Runnable() {
 					@Override
 					public void run() {
+						beaconManger.load("http://hoge.99blues.com/ibeacons.json");
+
 						mapView.invalidate();
 					}
 				});
