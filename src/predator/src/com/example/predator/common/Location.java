@@ -6,16 +6,16 @@ package com.example.predator.common;
  * @author miyamura
  *
  */
-public class LongLat {
+public class Location {
 	private double latitude;	/** 緯度 */
 	private double longitude;	/** 経度 */
 
-	public LongLat(){
+	public Location(){
 		latitude = 0.0;
 		longitude = 0.0;
 	}
 
-	public LongLat(double lat, double lng){
+	public Location(double lat, double lng){
 		latitude = lat;
 		longitude = lng;
 	}
@@ -35,6 +35,11 @@ public class LongLat {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}	
+
+	public String toString()
+	{
+		return String.format("Latitude:%f, Longitude:%f", latitude, longitude);
+	}
 }
 
 

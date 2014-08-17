@@ -20,7 +20,10 @@ import android.util.Log;
 
 /**
  * 
+ * 指定URLからJSONファイルを取得し、 JSONObjectに変換する。
+ * 
  * @author miyamura
+ * 
  * @see http://archive.guma.jp/2011/11/-asynctask-asynctaskloader.html
  * 
  */
@@ -28,18 +31,27 @@ public class JsonDownloader  extends AsyncTaskLoader<JSONObject>{
 
     private static final String TAG = JsonDownloader.class.getSimpleName();
 
-    private final String urlStr;
+    private final String urlStr;	// ダウンロードするURL
     private JSONObject result;
 
+    /**
+     * 
+     * @param context
+     * @param urlStr    ダウンロードするURL
+     */
     public JsonDownloader(Context context, String urlStr)
     {
         super(context);
         this.urlStr = urlStr;
     }
 
+    /**
+     * サーバに接続し、JSONファイルを取得する。
+     */
     @Override
     public JSONObject loadInBackground()
     {
+    	// check URL
         URL url;
         
         try {
@@ -51,6 +63,7 @@ public class JsonDownloader  extends AsyncTaskLoader<JSONObject>{
         }
 
         
+        // サーバから取得
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) url.openConnection();
@@ -91,8 +104,16 @@ public class JsonDownloader  extends AsyncTaskLoader<JSONObject>{
         }
     }
 
+    /**
+     * JSONファイルの受信
+     * 
+     * @param conn
+     * @return
+     * @throws IOException
+     */
     private String readContent(HttpURLConnection conn) throws IOException
     {
+    	// エンコーディングのチェック
         String charsetName = "UTF-8";
 
         final String contentType = conn.getContentType();
@@ -105,6 +126,8 @@ public class JsonDownloader  extends AsyncTaskLoader<JSONObject>{
             }
         }
 
+        
+        // 受信
         InputStream is = new BufferedInputStream(conn.getInputStream());
 
         final int length = conn.getContentLength();
@@ -121,7 +144,7 @@ public class JsonDownloader  extends AsyncTaskLoader<JSONObject>{
             }
         }
 
-        return new String(os.toByteArray(), charsetName);
+        return new String(os.toByteArray(), charsetName);	// ファイル全体を返す。
     }
 
     @Override

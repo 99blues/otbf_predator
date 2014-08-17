@@ -1,23 +1,25 @@
 package com.example.predator.ibeacon;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.util.Log;
 
-
+/**
+ * iBeaconリストの管理
+ * @author miyamura
+ *
+ */
 public class BeaconManager {
 
+    private static final String TAG = BeaconManager.class.getSimpleName();
 	
-	Map<Integer,String> map = null;
+	Map<Integer,BeaconItem> map = null;
 			
 	public BeaconManager(){
 	}
@@ -26,50 +28,49 @@ public class BeaconManager {
 		return (map != null && !map.isEmpty());
 	}
 	
-	public boolean load(String url){
-		map = null;
-		 
-		DefaultHttpClient cli = new DefaultHttpClient();
-
-		HttpGet req = new HttpGet(url);//"http://hoge.99blues.com/ibeacons.json");
-		HttpResponse resp = null;
-		  
-		try {
-			resp = cli.execute(req);
-		}
-		catch (ClientProtocolException e) {
-			Log.e("JSON", e.toString());
-		    return false;
-		}
-		catch (IOException e) {
-		    Log.e("JSON", e.toString());
-		    return false;
-		}
-		catch (Exception e) {
-		    Log.e("JSON", e.toString());
-		    return false;
-		}
-		 
-		int status = resp.getStatusLine().getStatusCode();
-		if (HttpStatus.SC_OK == status) {
-			try {
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			    resp.getEntity().writeTo(outputStream);
-			    
-			    String str = outputStream.toString(); // JSONデータ
-			    Log.d("JSON", str);
+	/**
+	 * iBeaconリストの読み込み
+	 * 
+	 * @param json   iBeaconリスト定義ファイル
+	 * @return
+	 */
+	public boolean load(JSONObject json)
+	{
+	    map = new HashMap<Integer,BeaconItem>();
+		
+	    try {
+			final JSONArray items = json.getJSONArray("ibeacons");
+			final int count = items.length();
+			
+			for(int i=0; i < count; i++){
+				try{
+					final JSONObject o = items.getJSONObject(i);
+					
+					final String uuid = o.getString("uuid");
+					final int minor = o.getInt("minor");
+					final double lat = o.getDouble("latitude");
+					final double lng = o.getDouble("longitude");
 				
-			    //map = new HashMap<Integer,String>();
+					BeaconItem beacon = new BeaconItem(uuid, minor, lat, lng);
+					
+					Log.d(TAG, String.format("[%d] iBeacon:{%s}", i, beacon.toString()));
+					
+					map.put(new Integer(minor), beacon);
+				}
+				catch (JSONException e ){
+					// １件だけのエラーなら、該当レコードのみスキップ
+					Log.e(TAG, String.format("Skip rec:%d ...invalid format", i ));
+		            Log.e(TAG, e.toString());
+				}
 			}
-			catch (Exception e) {
-				Log.e("JSON", "Error");
-				return false;
-			}
+			Log.d(TAG, String.format("regist %d beacons", map.size()));
 		}
-		else {
-			Log.e("JSON", "Status" + status);
-			return false;
+	    catch (JSONException e) {
+			// 全体の書式エラーなら失敗
+	    	map = null;
+            Log.e(TAG, e.toString());
 		}
-		return true;
+	    
+	    return isLoaded();
 	}
 }

@@ -31,15 +31,16 @@ import com.example.predator.map.MapView;
 import com.example.predator.player.Target;
 import com.example.predator.player.Hunter;
 
-//public class MainActivity extends Activity {
 public class MainActivity extends FragmentActivity
                           implements LoaderManager.LoaderCallbacks<JSONObject>{
 	
-	private static final String TAG = "Predator";//MainActivity.class.getSimpleName();
+	private static final String TAG = "Predator";
+	
+	private static final int ASYNC_ID_GET_BEACON = 0x0001;
 	
 	private final static int UPDATE_DELAY_MSEC = 3000;
 	private final static int UPDATE_INTERVAL_MSEC = 1000;
-	//private UpdateHandler mUpdate = new UpdateHandler(); 
+
 	private Timer updateTimer = null;
 	private Handler updateHandler = null;
 	
@@ -60,7 +61,6 @@ public class MainActivity extends FragmentActivity
 		hunter = new Hunter();
 		
 		beaconManger = new BeaconManager();
-//		beaconManger.load("http://hoge.99blues.com/ibeacons.json");
 		
 		mapView = new com.example.predator.map.MapView(this);
 		mapView.registPlayer(hunter, target);
@@ -70,7 +70,7 @@ public class MainActivity extends FragmentActivity
         // iBeaconリスト取得（非同期）
         Bundle args = new Bundle(1);
         args.putString(KEY_URL_STR, "http://hoge.99blues.com/ibeacons.json");
-        getSupportLoaderManager().initLoader(0, args, this);
+        getSupportLoaderManager().initLoader(ASYNC_ID_GET_BEACON, args, this);
         
         // 画面更新
 		updateHandler = new Handler();
@@ -92,8 +92,11 @@ public class MainActivity extends FragmentActivity
 
 
     @Override
-    public Loader<JSONObject> onCreateLoader(int id, Bundle args) {
-        String urlStr = args.getString(KEY_URL_STR);
+    public Loader<JSONObject> onCreateLoader(int id, Bundle args) 
+    {
+    	Log.d(TAG, String.format("JSON Start id:%d", id));
+
+    	String urlStr = args.getString(KEY_URL_STR);
         if (! TextUtils.isEmpty(urlStr)) {
             return new JsonDownloader(getApplication(), urlStr);
         }
@@ -101,13 +104,16 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<JSONObject> loader, JSONObject data) {
+    public void onLoadFinished(Loader<JSONObject> loader, JSONObject json) 
+    {
         // TODO 取得できた data で何かする
-    	Log.d(TAG, "JSON Loaded" + data.toString());
+    	Log.d(TAG, "JSON Finish:" +  loader.getClass().getSimpleName());
+    	beaconManger.load(json);
     }
 
     @Override
-    public void onLoaderReset(Loader<JSONObject> data) {
+    public void onLoaderReset(Loader<JSONObject> loader) 
+    {
         // 特に何もしない
     	Log.w(TAG, "JSON Reset");
     }
