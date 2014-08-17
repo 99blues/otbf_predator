@@ -1,6 +1,5 @@
 package com.example.predator.map;
 
-//import android.R;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,7 +16,13 @@ import com.example.predator.StateManager;
 
 import com.example.predator.player.Hunter;
 import com.example.predator.player.Target;
-	
+
+/**
+ * プレイ画面
+ * 
+ * @author miyamura
+ *
+ */
 public class PlayView extends View {
 
 	private StateManager stateManager = null;
@@ -58,6 +63,7 @@ public class PlayView extends View {
     	case PLAYING:			// プレイ中
     		drawPlaying(canvas);
     		break;
+    		
     	case WIN:				// 勝ち
     	case WON:				// 負け
     	case END:				// 終了	
