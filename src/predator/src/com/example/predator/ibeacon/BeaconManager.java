@@ -12,6 +12,7 @@ import android.util.Log;
 
 /**
  * iBeaconリストの管理
+ * 
  * @author miyamura
  *
  */

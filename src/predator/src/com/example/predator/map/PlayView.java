@@ -12,18 +12,23 @@ import android.graphics.Paint;
 import android.view.View;
 
 import com.example.predator.R;
+import com.example.predator.GameState;
+import com.example.predator.StateManager;
+
 import com.example.predator.player.Hunter;
 import com.example.predator.player.Target;
 	
-public class MapView extends View {
+public class PlayView extends View {
 
+	private StateManager stateManager = null;
 	private Target target = null;
 	private Hunter hunter = null;
 	
 	private int mCount = 0;
 	
-    public MapView(Context context) {
+    public PlayView(Context context, StateManager sm) {
         super(context);
+        stateManager = sm;
     }
     
     public void registPlayer(Hunter h, Target t){
@@ -31,11 +36,70 @@ public class MapView extends View {
     	target = t;
     }
     
+    
+    /**
+     * 画面描画
+     * 
+     * 状態遷移毎に表示内容を切り替える。
+     * 
+     * @param canvas
+     */
     @SuppressLint("DrawAllocation")
 	@Override
-    public void onDraw(Canvas canvas) {
+    public void onDraw(Canvas canvas)
+    {
+    	switch(stateManager.getState()){
+    	case UNKNOWN:			// 初期状態
+    	case LOADING:			// 準備中
+    		drawLoading(canvas);
+    		break;
+
+    	case WAITING:			// 待機中 (ゲーム開始待ち)
+    	case PLAYING:			// プレイ中
+    		drawPlaying(canvas);
+    		break;
+    	case WIN:				// 勝ち
+    	case WON:				// 負け
+    	case END:				// 終了	
+    		drawGameOver(canvas);
+    		break;
+    	}
     	
-    	drawCanvas(canvas);
+    }
+    
+    /**
+     * 初期画面を描画
+     */
+    private void drawLoading(Canvas canvas){
+    	clearCanvas(canvas);
+
+    	Paint paint = new Paint();
+
+        paint.setAntiAlias(false);
+        paint.setColor(Color.rgb(255, 0, 0));
+        paint.setTextSize(32);
+        canvas.drawText("Loading...", 100, 100, paint);
+    }
+    
+    /**
+     * 終了画面を描画
+     */
+    private void drawGameOver(Canvas canvas){
+    	clearCanvas(canvas);
+
+    	Paint paint = new Paint();
+
+        paint.setAntiAlias(false);
+        paint.setColor(Color.rgb(255, 0, 0));
+        paint.setTextSize(32);
+        canvas.drawText("GAME OVER", 100, 100, paint);
+    }
+      
+    /**
+     * プレイ中画面を描画
+     */
+    private void drawPlaying(Canvas canvas){
+    	clearCanvas(canvas);
     	drawHunterRange(canvas);
    		drawTarget(canvas);
     	
@@ -66,16 +130,13 @@ public class MapView extends View {
 
     }
 
-    private void drawCanvas(Canvas canvas){
+    private void clearCanvas(Canvas canvas){
         Paint paint = new Paint();
 
         paint.setStyle(Paint.Style.FILL);
 
         paint.setColor(Color.rgb(0xcf, 0xcf, 0xcf));
         canvas.drawRect(0,0,1280,1280,paint);
-
-        //paint.setColor(Color.rgb(255,255,255));
-        //canvas.drawCircle(930, 260, 200, paint);
     }
     
     /**
@@ -174,7 +235,12 @@ public class MapView extends View {
 		canvas.drawBitmap(myImage, x-size, y-size, paint);
 	}
 
-    
+
+    /**
+     * ビーコンを描画
+     * 
+     * @TODO ビーコンマネージャから取得して描画する。
+     */
     private void drawBeacon(Canvas canvas, int x, int y, int r, int c){
         Paint paint = new Paint();
 

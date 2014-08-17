@@ -27,9 +27,9 @@ import android.os.Build;
 
 import com.example.predator.ibeacon.BeaconManager;
 import com.example.predator.communication.JsonDownloader;
-import com.example.predator.map.MapView;
 import com.example.predator.player.Target;
 import com.example.predator.player.Hunter;
+import com.example.predator.map.PlayView;
 
 public class MainActivity extends FragmentActivity
                           implements LoaderManager.LoaderCallbacks<JSONObject>{
@@ -44,11 +44,12 @@ public class MainActivity extends FragmentActivity
 	private Timer updateTimer = null;
 	private Handler updateHandler = null;
 	
-	private com.example.predator.ibeacon.BeaconManager beaconManger = null;
+	private StateManager stateManager = null;
+	private BeaconManager beaconManager = null;
 	
-	private com.example.predator.map.MapView mapView = null;
-	private com.example.predator.player.Target target = null;
-	private com.example.predator.player.Hunter hunter = null;
+	private PlayView playView = null;
+	private Target target = null;
+	private Hunter hunter = null;
 	
 	private static final String KEY_URL_STR = "urlStr";
 	
@@ -60,12 +61,14 @@ public class MainActivity extends FragmentActivity
 		target = new Target();
 		hunter = new Hunter();
 		
-		beaconManger = new BeaconManager();
+		stateManager = new StateManager(GameState.LOADING);
+		//stateManager.setState( GameState.LOADING);
+		beaconManager = new BeaconManager();
 		
-		mapView = new com.example.predator.map.MapView(this);
-		mapView.registPlayer(hunter, target);
+		playView = new PlayView(this, stateManager);
+		playView.registPlayer(hunter, target);
 		
-        setContentView(mapView);
+        setContentView(playView);
         
         // iBeaconリスト取得（非同期）
         Bundle args = new Bundle(1);
@@ -82,7 +85,7 @@ public class MainActivity extends FragmentActivity
 				updateHandler.post(new Runnable() {
 					@Override
 					public void run() {
-						mapView.invalidate();
+						playView.invalidate();
 					}
 				});
 			}
@@ -108,7 +111,8 @@ public class MainActivity extends FragmentActivity
     {
         // TODO 取得できた data で何かする
     	Log.d(TAG, "JSON Finish:" +  loader.getClass().getSimpleName());
-    	beaconManger.load(json);
+    	beaconManager.load(json);
+    	stateManager.setState( GameState.WAITING);
     }
 
     @Override
