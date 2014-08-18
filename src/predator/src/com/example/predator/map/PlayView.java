@@ -183,7 +183,7 @@ public class PlayView extends View {
 
     	final int x = hunter.getX();
     	final int y = hunter.getY();
-    	final int r = 160;
+    	final int r = hunter.getR();
     	
         Paint paint = new Paint();
 
@@ -209,7 +209,8 @@ public class PlayView extends View {
     	final int oc = Color.argb(32, 255, 0, 255);
     	final int x = target.getX();
     	final int y = target.getY();
-    	
+       	final int size = 42;
+            	
         Paint paint = new Paint();
 
         paint.setAntiAlias(false);
@@ -221,7 +222,11 @@ public class PlayView extends View {
 
         paint.setColor(ic);
         canvas.drawCircle(x, y, r/2, paint);
-    }
+
+        Resources res = this.getContext().getResources();
+		Bitmap myImage = BitmapFactory.decodeResource(res, R.drawable.target);
+		canvas.drawBitmap(myImage, x-size, y-size, paint);
+   }
 
     /**
      *  ユーザーの位置を描画
@@ -231,12 +236,12 @@ public class PlayView extends View {
     	//final int c = Color.GREEN;
     	final int x = hunter.getX();
     	final int y = hunter.getY();
-    	final int size = 32;
+    	final int size = 42;
     	
 		Paint paint = new Paint();
     	
 		Resources res = this.getContext().getResources();
-		Bitmap myImage = BitmapFactory.decodeResource(res, R.drawable.bsd);
+		Bitmap myImage = BitmapFactory.decodeResource(res, R.drawable.predator);
 		
 		canvas.drawBitmap(myImage, x-size, y-size, paint);
 	}
